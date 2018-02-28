@@ -67,6 +67,7 @@
 #if __IPHONE_8_0
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     if (self.contentViewStoryboardID) {
         self.contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.contentViewStoryboardID];
     }
@@ -167,7 +168,7 @@
         } completion:^(BOOL finished) {
             [self hideViewController:self.contentViewController];
             [contentViewController didMoveToParentViewController:self];
-            _contentViewController = contentViewController;
+            self.contentViewController = contentViewController;
 
             [self statusBarNeedsAppearanceUpdate];
             [self updateContentViewShadow];
@@ -398,11 +399,11 @@
             strongSelf.backgroundImageView.transform = CGAffineTransformMakeScale(1.7f, 1.7f);
         }
         if (strongSelf.parallaxEnabled) {
-            IF_IOS7_OR_GREATER(
+            if (@available(iOS 7.0, *)) {
                for (UIMotionEffect *effect in strongSelf.contentViewContainer.motionEffects) {
                    [strongSelf.contentViewContainer removeMotionEffect:effect];
                }
-            );
+            }
         }
     };
     void (^completionBlock)(void) = ^{
@@ -480,7 +481,7 @@
 - (void)addMenuViewControllerMotionEffects
 {
     if (self.parallaxEnabled) {
-        IF_IOS7_OR_GREATER(
+        if (@available(iOS 7.0, *)) {
            for (UIMotionEffect *effect in self.menuViewContainer.motionEffects) {
                [self.menuViewContainer removeMotionEffect:effect];
            }
@@ -494,14 +495,14 @@
            
            [self.menuViewContainer addMotionEffect:interpolationHorizontal];
            [self.menuViewContainer addMotionEffect:interpolationVertical];
-        );
+        }
     }
 }
 
 - (void)addContentViewControllerMotionEffects
 {
     if (self.parallaxEnabled) {
-        IF_IOS7_OR_GREATER(
+        if (@available(iOS 7.0, *)) {
             for (UIMotionEffect *effect in self.contentViewContainer.motionEffects) {
                [self.contentViewContainer removeMotionEffect:effect];
             }
@@ -517,7 +518,7 @@
                 [self.contentViewContainer addMotionEffect:interpolationHorizontal];
                 [self.contentViewContainer addMotionEffect:interpolationVertical];
             }];
-        );
+        }
     }
 }
 
@@ -526,14 +527,14 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    IF_IOS7_OR_GREATER(
+    if (@available(iOS 7.0, *)) {
        if (self.interactivePopGestureRecognizerEnabled && [self.contentViewController isKindOfClass:[UINavigationController class]]) {
            UINavigationController *navigationController = (UINavigationController *)self.contentViewController;
            if (navigationController.viewControllers.count > 1 && navigationController.interactivePopGestureRecognizer.enabled) {
                return NO;
            }
        }
-    );
+    }
   
     if (self.panFromEdge && [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && !self.visible) {
         CGPoint point = [touch locationInView:gestureRecognizer.view];
